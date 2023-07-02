@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="c3p0-0.9.5.2">
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/c3p0-0.9.5.2.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/commons-beanutils-1.8.3.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/commons-dbutils-1.6.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/commons-logging-1.2.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/jstl.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/mchange-commons-java-0.2.11.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/mysql-connector-java-5.1.42-bin.jar" />
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/standard.jar" />
+  </library>
+  <library name="javaee-api-7.0">
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/javaee-api-7.0.jar" />
+  </library>
+  <library name="json-lib-2.4-jdk15">
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/json-lib-2.4-jdk15.jar" />
+  </library>
+  <library name="json-rpc-1.0">
+    <archive path="D:/ideawang/logintest/web/WEB-INF/lib/json-rpc-1.0.jar" />
+  </library>
+</eclipse-userlibraries>
+

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#container {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0& ak=PwcoIEW66so5A9W6I1dxAUTgnG0r8MD3">
+    </script>
+    <title>百度地图api展示</title>
+</head>
+<body>
+<!--   <div id="allmap"></div>-->
+<div id="container"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var webSocket = new WebSocket("ws://121.199.73.61:8080/dw/LoginServlet");
+    webSocket.onerror = function (event) {
+        makeDataOnWeb("error");  // ？
+    };
+
+    //这里只是调试用
+    //连接成功时回调，真的会执行括号中的代码！
+    webSocket.onopen = function (event) {
+        // makeDataOnWeb("conn success");
+    };
+
+    webSocket.onmessage = function (event) {
+        makeDataOnWeb(event.data);
+
+    };
+    webSocket.onerror = function (event) {
+        // makeDataOnWeb("conn close");
+    };
+    //这里只是调试用
+    webSocket.onclose = function (event) {
+        // makeDataOnWeb("conn close");
+    };
+
+    //blog.csdn.net/Shinlyzsljay/article/details/78132793
+    // var int=self.setInterval("makeDataOnweb()",300);
+    function makeDataOnWeb(data) {  // var jsonstr = {"
+        console.log(data)
+        var points = JSON.parse(data).map((item) => { return { lng: item.x, lat: item.y } })
+        // 运行试试
+        //新建三个地图上点
+
+        console.log(points)
+        // var points = [
+        //     {"lng":112.58,"lat":26.89,"url":"http://www.baidu.com","id":1,"name":"p1"},
+        //     {"lng":112.59,"lat":26.90,"url":"http://www.mi.com","id":2,"name":"p2"},
+        //     {"lng":112.57,"lat":26.88,"url":"http://www.csdn.com","id":3,"name":"p3"}
+        // ];
+        //创建标注点并添加到地图中
+        // function addMarker(points) {
+        //循环建立标注点
+        // for (var i = 0, pointsLen = points.length ; i < pointsLen; i++) {
+        var map = new BMap.Map("container");
+        var driving = new BMap.DrivingRoute(map);
+
+        //创建驾车实例
+
+        // 坐标点数据
+        // var pointArr = [{lng: 120.37330074071, lat: 31.498294737149},{lng: 120.57330074071, lat: 31.498294737149},{lng: 120.87330074071, lat: 31.498294737149},{lng: 121.37330074071, lat: 31.498294737149}];
+
+        // 生成坐标点
+        var trackPoint = [];
+        for (var i = 0, j = points.length; i < j; i++) {
+            trackPoint.push(new BMap.Point(points[i].lng, points[i].lat)); //送点
+        }
+
+
+        for (var i = 0; i < trackPoint.length; i++) {
+            if(i != trackPoint.length -1 ){
+                driving.search(trackPoint[i], trackPoint[i+1]);
+            }
+        }
+        driving.setSearchCompleteCallback(function(){
+            var pts = driving.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
+
+            var polyline = new BMap.Polyline(pts);
+            map.addOverlay(polyline);
+
+            // 画图标、想要展示的起点终点途经点
+            for (var i = 0; i < trackPoint.length; i++) {
+                var lab;
+                if(i == 0){
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }else if(i == trackPoint.length - 1){
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }else{
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }
+                var marker = new BMap.Marker(trackPoint[i])
+                map.addOverlay(marker);
+                map.addOverlay(lab);
+            }
+            map.setViewport(trackPoint);
+        });
+        // }
+
+
+
+        //  var point = new BMap.Point(points[i].lng, points[i].lat); //将标注点转化成地图上的点
+        // //  var polyline = new BMap.Polyline([new BMap.Point(points[i].lng, points[i].lat),
+        // //       // new BMap.Point(points[i+1].lng, points[i+1].lat),
+        // //      // new BMap.Point(points[i+2].lng, points[i+2].lat),
+        // //  ],{strokeColor:"blue",strokeWeight:6,strokeOpacity:0.5});
+        // // map.addOverlay(polyline);
+        // var marker = new BMap.Marker(point); //将点转化成标注点
+        // map.addOverlay(marker);  //将标注点添加到地图上
+        //添加监听事件
+        // (function () {
+        //     var thePoint = points[i];
+        //     marker.addEventListener("click",
+        //         function () {
+        //             showInfo(this, thePoint);
+        //         });
+        // })();
+
+
+
+
+        // function showInfo(thisMarker, point) {
+        //     //获取点的信息
+        //     var sContent =
+        //         '<ul style="margin:0 0 5px 0;padding:0.2em 0">'
+        //         + '<li style="line-height: 26px;font-size: 15px;">'
+        //         + '<span style="width: 50px;display: inline-block;">id：</span>' + point.id + '</li>'
+        //         + '<li style="line-height: 26px;font-size: 15px;">'
+        //         + '<span style="width: 50px;display: inline-block;">名称：</span>' + point.name + '</li>'
+        //         + '<li style="line-height: 26px;font-size: 15px;"><span style="width: 50px;display: inline-block;">查看：</span><a href="' + point.url + '">详情</a></li>'
+        //         + '</ul>';
+        //     var infoWindow = new BMap.InfoWindow(sContent); //创建信息窗口对象
+        //     thisMarker.openInfoWindow(infoWindow); //图片加载完后重绘infoWindow
+        // }
+
+        //创建地图
+        // var map = new BMap.Map("allmap");
+        // map.centerAndZoom(new BMap.Point(116.41146,39.912703), 12);  // 设置中心点
+        //  map.centerAndZoom("广州");
+        //  map.setCurrentCity("广州");          //设置为衡阳
+        // map.addControl(new BMap.MapTypeControl());
+        // map.enableScrollWheelZoom(true);
+        // var driving = new BMap.DrivingRoute(map);
+        // addMarker(points);
+
+        map.centerAndZoom(new BMap.Point(116.41146,39.912703), 13);
+        map.addControl(new BMap.NavigationControl());               // 添加平移缩放控件
+        map.addControl(new BMap.ScaleControl());                    // 添加比例尺控件
+        map.addControl(new BMap.OverviewMapControl());              //添加缩略地图控件
+        map.addControl(new BMap.MapTypeControl());
+        map.enableScrollWheelZoom(true);
+        map.clearOverlays();                        //清除地图上所有的覆盖物
+
+    }
+</script>

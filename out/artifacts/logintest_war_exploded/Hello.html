@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#container {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0& ak=PwcoIEW66so5A9W6I1dxAUTgnG0r8MD3">
+    </script>
+    <script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
+    <title>百度地图api展示</title>
+</head>
+<body>
+<!--   <div id="allmap"></div>-->
+<div id="container"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var webSocket = new WebSocket("ws://localhost:9999/LoginServlet");
+    webSocket.onerror = function (event) {
+        makeDataOnWeb("error");  // ？
+    };
+
+    //这里只是调试用
+    //连接成功时回调，真的会执行括号中的代码！
+    webSocket.onopen = function (event) {
+        // makeDataOnWeb("conn success");
+    };
+
+    webSocket.onmessage = function (event) {
+        makeDataOnWeb(event.data);
+
+    };
+    webSocket.onerror = function (event) {
+        // makeDataOnWeb("conn close");
+    };
+    //这里只是调试用
+    webSocket.onclose = function (event) {
+        // makeDataOnWeb("conn close");
+    };
+
+
+    function makeDataOnWeb(data) {  // var jsonstr = {"
+        var map = new BMap.Map("container");
+        var trackPoint = []
+        var driving = new BMap.DrivingRoute(map);
+        var points = JSON.parse(data).map((item) => { return { lng: item.y, lat: item.x } })
+        console.log('gps\'s points:', points)
+        var gpsPoint = JSON.parse(data).map((item) => {
+            const bPoint = new BMap.Point(item.y, item.x);
+            console.log('-> orgin:', item.y, item.x)
+            console.log('=> newb', bPoint)
+            return bPoint
+        })
+        console.log('baidu\'s points:', points)
+        trackPoint = gpsPoint;
+
+        // // 这是干嘛的？
+        translateCallback = function (point) {
+            var marker = new BMap.Marker(point);
+            map.addOverlay(marker);
+            var label = new BMap.Label("我是百度标注哦", {offset: new BMap.Size(20, -10)});
+            marker.setLabel(label); //添加百度label
+            map.setCenter(point);
+            alert("转化为百度坐标为："+point.lng + "," + point.lat);
+            for (var i = 0; i < trackPoint.length; i++) {
+                if(i != trackPoint.length -1 ){
+                    driving.search(trackPoint[i], trackPoint[i+1]);
+                }
+            }
+        }
+        gpsPoint.map(item => translateCallback(item))
+
+
+
+        driving.setSearchCompleteCallback(function(){
+            var pts = driving.getResults().getPlan(0).getRoute(0).getPath();    //通过驾车实例，获得一系列点的数组
+
+            var polyline = new BMap.Polyline(pts);
+            map.addOverlay(polyline);
+
+            // 画图标、想要展示的起点终点途经点
+            for (var i = 0; i < trackPoint.length; i++) {
+                var lab;
+                if(i == 0){
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }else if(i == trackPoint.length - 1){
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }else{
+                    lab = new BMap.Label({position:trackPoint[i]});
+                }
+                var marker = new BMap.Marker(trackPoint[i])
+                map.addOverlay(marker);
+                map.addOverlay(lab);
+            }
+            map.setViewport(trackPoint);
+        });
+        // }
+
+
+
+        map.centerAndZoom(new BMap.Point(116.41146,39.912703), 13);
+        map.addControl(new BMap.NavigationControl());               // 添加平移缩放控件
+        map.addControl(new BMap.ScaleControl());                    // 添加比例尺控件
+        map.addControl(new BMap.OverviewMapControl());              //添加缩略地图控件
+        map.addControl(new BMap.MapTypeControl());
+        map.enableScrollWheelZoom(true);
+        map.clearOverlays();                        //清除地图上所有的覆盖物
+
+    }
+</script>

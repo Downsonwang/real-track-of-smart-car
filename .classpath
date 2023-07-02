@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat 8.5.47"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/c3p0-0.9.5.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json-rpc-1.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javaee-api-7.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json-lib-2.4-jdk15"/>
+	<classpathentry kind="output" path="out/production/logintest"/>
+</classpath>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/out/test/logintest"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="Tomcat 8.5.47" scope="PROVIDED"/>
+	<levels>
+		<level name="Tomcat 8.5.47" value="application_server_libraries"/>
+		<level name="c3p0-0.9.5.2" value="project"/>
+		<level name="json-rpc-1.0" value="project"/>
+		<level name="javaee-api-7.0" value="project"/>
+		<level name="json-lib-2.4-jdk15" value="project"/>
+	</levels>
+</component>
